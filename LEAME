@@ -1,0 +1,3 @@
+El proyecto fue creado utilizando el framework de Espressif ESP-IDF que por debajo utiliza FreeRTOS para esta placa(ESP32) . 
+La página de documetación del ESP-IDF es esta https://docs.espressif.com/projects/esp-idf/en/v5.0.6/esp32s2/index.html 
+Luego se utiizó visual studio Code con Platformio (https://platformio.org/) como entorno de desarollo, IDE.

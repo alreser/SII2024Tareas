@@ -1,10 +1,24 @@
+/* Ejemplo programación de Tareas en cada nucleo del procesador 
+ Ejemplo de progración de Interrupciones por hardware desde un GPIO
+Cátedra: Sistemas Informáticos Industriales 
+Año: 2024
+Plataforma: ESP-IDF (https://docs.espressif.com/projects/esp-idf)
+IDE: VsCode con plantilla de PlatformIO
+SoC: ESP32 
+Notas:  En este ejemplo se crean 3 tarea que serán ejecutadas según su prioridad. También se crea una 
+        interrupción por hardware ISR que se recibe como un flanco ascendente en el GPIO especificado para 
+        tal fin. La interrupción se lanza al cerrar el circuito de un interruptor de tipo Final de Carrera.
+  
+*/
+
+
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <stdio.h>
 #include <driver/gpio.h>
 #include <esp_log.h>
 
-//Declaración de variables globales e incializar funciones
+//Declaración de variables globales e inicializar funciones
 static const char*  TAG = "SII2024Tareas";
 #define PinMotor 23  
 
@@ -17,7 +31,8 @@ static TickType_t ultimaISR; //tiempo en que se ejecutó por última vez la inte
 //función que ejecuta la rutina de interrrupción
 void ISRAlarma(void *args)
 {
- 
+ // Controlo que hayan pasado al menos 20 milisengudo entre cada interrupción. 
+ // ya que el switch de final de carrera no tiene demasiada sensibilidad y produce varias ISR simultaneas.
  if (xTaskGetTickCountFromISR() > (ultimaISR + 20))
  {
     ultimaISR = xTaskGetTickCountFromISR() ;
@@ -145,12 +160,13 @@ void app_main()
 //xTaskCreatePinnedToCore(Tarea3, "Tarea 3", 2048, NULL,1, &handleATarea3,0);
 
 
-//Creamos una interruoción externa asociada al puerto 27. 
+//Creamos una interrupción externa asociada al puerto 27. 
 InitISR();
 
 //Iniclizamos las propiedades del GPIO 23 
 gpio_reset_pin(PinMotor); 
 gpio_set_direction(PinMotor, GPIO_MODE_DEF_OUTPUT) ; 
+
 
 bool bandera = true; 
 
